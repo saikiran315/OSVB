@@ -1,0 +1,16 @@
+*
+    const resetPassword = async (email: string) => {
+    try{
+      await sendPasswordResetEmail(auth, email).then(() => {
+        console.log("success")
+      });
+    }
+    catch(error) {
+      console.log("error with the reset password feature!", error);
+    }
+};
+  */
+  const handleClick = (e, path) => {
+  if (path === "/forgotpassword") {
+    console.log("I clicked on the About Page");
+  }

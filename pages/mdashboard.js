@@ -13,7 +13,7 @@ import h from "../public/photos/Animated_Shape.svg";
 import Image from "next/image";
 
 const Dashboard = () => {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);  
   const router = useRouter();
   const [user, setUser] = useState({});
 
@@ -42,7 +42,7 @@ const Dashboard = () => {
     if (auth.currentUser) {
       let uid = auth.currentUser.uid;
 
-      onSnapshot(doc(db, "clients", uid), (doc) => {
+      onSnapshot(doc(db, "mechanic", uid), (doc) => {
         setUser(doc.data());
       });
     } else {
@@ -80,6 +80,8 @@ const Dashboard = () => {
                     className="rounded-full h-48 w-48 shadow-2xl bg-cover"
                     // width="192"
                     // height="192"
+
+
                   />
                 </div>
 
@@ -96,18 +98,18 @@ const Dashboard = () => {
               <div className="p-4 md:p-12 text-center">
               
                 <h1 className="text-2xl font-bold ">
-                  Vehicle No. : {user.vNo}
+                  Address : {user.vNo}
                 </h1>
                 <h1 className="text-2xl font-bold pt-4">
-                  Vehicle Model : {user.vModel}
+                  ShopName : {user.vModel}
                 </h1>
                 <h1 className="text-2xl font-bold py-4">
-                  Phone : {user.phone}
+                  Phone No : {user.phone}
                 </h1>
                 {/* <h1 className="text-2xl font-bold p-6">City :</h1> */}
                 <hr />
                 <Link
-                  href="./Request"
+                  href="Mechanic"
                   className="bg-indigo-600 rounded-lg p-3 text-white "
                 >
                   Mechanics Near Me

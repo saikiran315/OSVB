@@ -1,18 +1,22 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
-const firebaseConfig = {
-  apiKey: "AIzaSyAkufXeg2rbk11gjtQT5GwkBqjfiSAZGRI",
-  authDomain: "nextjs-701fb.firebaseapp.com",
-  projectId: "nextjs-701fb",
-  storageBucket: "nextjs-701fb.appspot.com",
-  messagingSenderId: "634650806361",
-  appId: "1:634650806361:web:de496b003743839cfc8948",
-  measurementId: "G-R2277YPQZY",
+import * as firebase from "firebase/app";
+const firebaseConf = {
+  apiKey: "AIzaSyBAX2u96gpYSmM7CuECu6c5scZAB2zl5ks",
+  authDomain: "osvb-1.firebaseapp.com",
+  projectId: "osvb-1",
+  storageBucket: "osvb-1.appspot.com",
+  messagingSenderId: "115801201583",
+  appId: "1:115801201583:web:87483ef97d8ade89676d5a",
+  measurementId: "G-CJF52B9K88"
 };
-// Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-export const auth = getAuth();
-export const storage = getStorage();
-export const db = getFirestore();
+
+const app = initializeApp(firebaseConf);
+const auth = getAuth(app);
+const storage = getStorage();
+const db = getFirestore();
+const provider = new GoogleAuthProvider()
+
+export {auth, storage, db, provider}

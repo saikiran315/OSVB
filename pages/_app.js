@@ -8,7 +8,7 @@ function MyApp({ Component, pageProps }) {
     <AuthContextProvider>
       <Component {...pageProps} />
       <Analytics />
-    </AuthContextProvider>
+    </AuthContextProvider>  
   );
 }
 

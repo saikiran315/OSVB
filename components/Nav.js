@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Link from "next/link";
-
+import {GiHomeGarage} from "react-icons/gi"
+import {FaUserTie} from "react-icons/fa"
 export default function Nav() {
   const [navbar, setNavbar] = useState(false);
-
+  const [showModal, setShowModal] = useState(false);
   return (
     <div className="w-full bg-white shadow">
       <div className="justify-between  mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
@@ -50,6 +51,56 @@ export default function Nav() {
             </div>
           </div>
         </div>
+        {showModal ? (
+        <>
+          <div
+            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+          >
+            <div className="relative w-auto my-6 mx-auto max-w-3xl">
+              {/*content*/}
+              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex  justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                  <h3 className="text-xl font-semibold">
+                    Sign Up
+                  </h3>
+                  <button
+                    className="p-1 ml-auto  float-right hover:scale-125 duration-300 text-3xl leading-none font-semibold "
+                    onClick={() => setShowModal(false)}
+                  >
+                    <span className="text-red-400  ">
+                      X
+                    </span>
+                  </button>
+                </div>
+                {/*body*/}
+                <div className="relative p-6 flex items-center gap-10 justify-center">
+                  <button className="hover:scale-125 duration-300 " >
+                   
+                    <Link href="./mregister" >
+                    <GiHomeGarage size={80} className="text-indigo-800"/>
+                       <p className="text-2xl">Mechanic</p>
+                       </Link>
+                    
+                  </button>
+                  <button className="hover:scale-125 duration-300 " >
+                    
+                    <Link href="./Register" >
+                    <FaUserTie size={75}/>
+                      <p className="text-2xl">User</p>
+                      </Link>
+                  </button>
+                  
+                  
+                </div>
+                {/*footer*/}
+                
+              </div>
+            </div>
+          </div>
+          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+        </>
+      ) : null}
         <div>
           <div
             className={`flex-1 justify-self-center pb-3 mt-8 md:block md:pb-0 md:mt-0 ${
@@ -61,17 +112,21 @@ export default function Nav() {
                 <Link href="/">Home</Link>
               </li>
               <li className="text-gray-600 hover:text-blue-600">
-                <a href="">Contact</a>
+                <a href="./contact">Contact</a>
               </li>
               <li className="text-gray-600 hover:text-blue-600">
-                <a href="">About</a>
+                <a href="./about">About</a>
               </li>
               <li className="text-gray-600 hover:text-blue-600">
-                <Link href="./Register">Sign Up</Link>
+                <button onClick={() => setShowModal(true)}>
+
+                Sign up
+                </button>
               </li>
-              <li className="rounded-lg border p-3 bg-indigo-600 text-white hover:scale-110 duration-300">
+              <li className="rounded-lg border p-3 bg-[#3EC1D3] text-white hover:scale-110 duration-300">
                 <Link href="./Login">Login In</Link>
               </li>
+             
             </ul>
           </div>
         </div>

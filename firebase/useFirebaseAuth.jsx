@@ -37,7 +37,7 @@ export default function useFirebaseAuth() {
     firebase.auth().createUserWithEmailAndPassword(email, password);
 
   const signOut = () => firebase.auth().signOut().then(clear);
-
+  // const firebaseAuthorization =()=> firebase.auth();
   // useEffect(() => {
   //   const unsubscribe = firebase.auth().onAuthStateChanged(authStateChanged);
   //   return () => unsubscribe();
@@ -46,8 +46,10 @@ export default function useFirebaseAuth() {
   return {
     authUser,
     loading,
+    firebaseAuthorization,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
+    signInWithGoogle,
     signOut,
   };
 }
