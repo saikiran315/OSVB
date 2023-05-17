@@ -6,7 +6,8 @@ import { db } from "../firebase/firebase";
 import { useRouter } from "next/router";
 import Link from "next/link";
 // import Mechanic from "./Mechanic";
-
+import { messaging } from "../firebase/firebase";
+import { getMessaging, getToken } from "firebase/messaging";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import h from "../public/photos/Animated_Shape.svg";
@@ -20,7 +21,38 @@ const Dashboard = () => {
   if (!currentUser) {
     router.push("./Login");
   }
-
+     const messaging=getMessaging();
+    async function requestPermission() {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        // Generate Token
+        const token = await getToken(messaging, {
+          vapidKey:
+            "BIn0ve8Z-VyYOM089LsQ0LwIJHRZpSgeGL9OFQwKlGdmRU6XMdS3iCIxLFv1J9Aabu8c9AOFixeS3Vc68tJ2xYcOFGg",
+        }).then((currentToken) => {
+          if (currentToken) {
+            // Send the token to your server and update the UI if necessary
+            // ...
+          } else {
+            // Show permission request UI
+            console.log('No registration token available. Request permission to generate one.');
+            // ...
+          }
+        }).catch((err) => {
+          console.log('An error occurred while retrieving token. ', err);
+          // ...
+        });
+        console.log("Token Gen", token);
+        // Send this token  to server ( db)
+      } else if (permission === "denied") {
+        alert("You denied for the notification");
+      }
+    }
+  
+    useEffect(() => {
+      // Req user for notification permission
+      requestPermission();
+    }, []);
   //   return children;
   // };
   // useEffect(() => {
@@ -107,7 +139,7 @@ const Dashboard = () => {
                 {/* <h1 className="text-2xl font-bold p-6">City :</h1> */}
                 <hr />
                 <Link
-                  href="./Request"
+                  href="./search"
                   className="bg-indigo-600 rounded-lg p-3 text-white "
                 >
                   Mechanics Near Me

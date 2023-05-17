@@ -5,11 +5,13 @@ import {
     HiAtSymbol,
     HiOutlineUser,
     HiPhone,
-    MdLocationOn
 } from "react-icons/hi";
-
+import {
+    MdLocationOn
+} from "react-icons/md"
 import { AiFillCar } from "react-icons/ai";
-import { auth, db, storage } from "../firebase/firebase";
+import { GiHomeGarage } from "react-icons/gi"
+import { auth, db, storage,currToken } from "../firebase/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { React, useState, useEffect } from "react"
@@ -17,12 +19,53 @@ import { useAuthState } from "react-firebase-hooks/auth"
 import { signOut } from "firebase/auth"
 import Image from "next/image";
 
-const userDash = () => {
+const mechdash = () => {
+    const [lat, setLat] = useState(null);
+    const [lng, setLng] = useState(null);
+    const [status, setStatus] = useState(null);
+    const [ad, setAd] = useState()
+    
+    const api = "ApOrSPtt3Kb25jn69KkX92oZaaLopI9ppMJaU6-eVeieOrMCWg9vusEaME2E10Dd"
+    const getLocation = (e) => {
+        e.preventDefault()
+        if (!navigator.geolocation) {
+            setStatus('Geolocation is not supported by your browser');
+        } else {
+            setStatus('Locating...');
+            navigator.geolocation.getCurrentPosition((position) => {
+                setStatus(null);
+                setLat(position.coords.latitude);
+                setLng(position.coords.longitude);
+            }, () => {
+                setStatus('Unable to retrieve your location');
+            });
 
+        }
+    }
+
+    async function getLoc(e) {
+        e.preventDefault()
+        const url = `https://dev.virtualearth.net/REST/v1/Locations/${lat},${lng}?&key=${api}`
+        const response = await fetch(url);
+        var data = await response.json();
+        setAd(data["resourceSets"][0]["resources"][0]["address"]["formattedAddress"])
+        // if(Object.keys(ad).length!=0){
+
+        //   console.log(ad["resourceSets"][0]["resources"][0]["address"]["formattedAddress"]);
+        console.log(data["resourceSets"][0]["resources"][0]["address"]["formattedAddress"]);
+        // }
+        console.log(data);
+
+        // console.log(ad["resourceSets"][0]["resources"][0]["address"]["formattedAddress"]);
+        // console.log(Object.keys(ad).length!=0);
+    }
+    console.log(lat, lng);
+    console.log(ad);
     const router = useRouter()
     const [user, setuser] = useAuthState(auth)
-    const [verify,setVerify] = useState(false)
-    
+    const [verify, setVerify] = useState(false)
+    const [err, setErr] = useState(false)
+
 
     const signout = () => {
         signOut(auth)
@@ -30,40 +73,44 @@ const userDash = () => {
     }
 
     console.log(user);
-    const check = async () =>{
-        const docRef = doc(db, "clients", user.uid);
+    const check = async () => {
+        const docRef = doc(db, "mechanic", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-            router.push("./Dashboard")
+            router.push("./mdashboard")
         } else {
             // docSnap.data() will be undefined in this case
             setVerify(true)
-            console.log("No such document!");   
+            console.log("No such document!");
         }
     }
     useEffect(() => {
         check()
-    },[])
+    }, [])
     const [loading, setLoading] = useState(false);
     const handleSubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
         const username = e.target[1].value || user.displayName;
-        const vModel = e.target[2].value;
-        const vNo = e.target[3].value;
-        const phone = user.phoneNumber || e.target[4].value;
+
+        const Address = ad
+        const ShopName = e.target[4].value;
+        const phone = user.phoneNumber || e.target[5].value;
         const file = user.photoURL;
-        console.log(username, vModel, vNo, phone);
+        console.log(username, Address, ShopName, phone);
 
         try {
-            setDoc(doc(db, "clients", user.uid), {
-                username: user.displayName,
-                vModel: vModel,
-                vNo: vNo,
+            setDoc(doc(db, "mechanic", user.uid), {
+                username: username,
+                Address: Address,
+                ShopName: ShopName,
                 phone: phone,
                 photoURL: file,
-                uid : user.uid,
-                email : user.email,
+                uid: user.uid,
+                email: user.email,
+                lat: lat,
+                lng: lng,
+                currentToken : currToken,
 
             })
                 .then(() => {
@@ -79,14 +126,14 @@ const userDash = () => {
             setErr(true);
             setLoading(false);
         }
-        router.push("./Dashboard");
+        router.push("./mdashboard");
         // console.log("Successfull");
     }
 
 
     return (
-        <>{verify && 
-        
+        <>{verify &&
+
             <div className="flex  relative">
                 <Image src={h} className="w-full h-[135vh]" alt=""></Image>
                 <div className="m-auto bg-slate-50 rounded-md w-2/5 absolute inset-2">
@@ -100,7 +147,7 @@ const userDash = () => {
                                     </p>
                                 </div>
 
-                                <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+                                <form className="flex flex-col gap-5" onSubmit={handleSubmit} >
                                     <div className="flex flex-row border rounded-t-xl">
                                         <input
                                             type="email"
@@ -132,29 +179,33 @@ const userDash = () => {
 
 
 
-                                    <div className="flex flex-row border rounded-t-xl">
-                                        <input
-                                            type="text"
-                                            name="VModel"
-                                            placeholder="Enter Vehicle Model"
-                                            //   value={user.vModel}
-                                            //   onChange={(e)=>setZ(e.target.value)}
-                                            className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
-                                        />
-                                        <span className="icon flex items-center px-4">
-                                            <AiFillCar size={25} />
+                                    <div className="flex  border rounded-t-xl">
+
+                                        <span className="icon space-x-4 h-18 flex items-center px-4">
+                                            <MdLocationOn size={25} />
                                         </span>
+                                        <button onClick={getLocation} className="rounded border-2 p-2 bg-indigo-600">Get Location : </button>
+                                        <p>{status}</p>
+                                        {lat && <p>Latitude : {lat}</p>}
+                                        {lng && <p>Longitude : {lng}</p>}
+
+                                    </div>
+
+                                    <div className="flex flex-row border rounded-t-xl">
+                                        <MdLocationOn size={25} />
+                                        <button onClick={getLoc} className="rounded border-2 p-2 bg-indigo-600">Get Address : </button>
+                                        {ad && <p>{ad}</p>}
+
                                     </div>
                                     <div className="flex flex-row border rounded-t-xl">
                                         <input
                                             type="text"
-                                            name="VNum"
-                                            placeholder="Enter Vehicle Number"
-                                            //   value={user.vNo}
+                                            name="ShopName"
+                                            placeholder="Shop Name"
                                             className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
                                         />
                                         <span className="icon flex items-center px-4">
-                                            <AiFillCar size={25} />
+                                            <GiHomeGarage size={25} />
                                         </span>
                                     </div>
                                     <div className="flex flex-row border rounded-t-xl">
@@ -173,7 +224,7 @@ const userDash = () => {
 
                                     <div className="input-button">
                                         <button
-                                            type="submit"
+                                                                                    
                                             // disabled={loading}
                                             className="bg-indigo-600 rounded-lg p-3 text-white"
                                         >
@@ -187,10 +238,10 @@ const userDash = () => {
                     </div>
                 </div>
             </div>
-            }
+        }
         </>
     )
 
 }
-export default userDash;
+export default mechdash;
 

@@ -45,7 +45,7 @@ const Mechanic = () => {
                 </svg>
               </div>
               <input
-                type="text"
+                type="text" 
                 className="block p-2 pl-10 w-70 text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:pl-3"
                 placeholder="Search Here..."
                 onFocus={handleFocus}

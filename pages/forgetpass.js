@@ -7,10 +7,10 @@ import { auth, provider } from "../firebase/firebase";
 import { useAuthState } from 'react-firebase-hooks/auth';
 const ForgetPass = () => {
 
-    // const [user, loading] = useAuthState(auth)
+     const [user, loading] = useAuthState(auth)
     const ForgetPass = (e) =>{
         e.preventDefault();
-        // console.log(e.target[0].value)
+        // console.log(e.target[0].value)       
         const email = e.target[0].value;
         console.log(email)
         sendPasswordResetEmail(auth, email)

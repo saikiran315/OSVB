@@ -3,7 +3,6 @@ import Image from "next/image";
 import h from "../public/photos/Animated_Shape.svg";
 import Nav from "../components/Nav";
 import { useFormik } from 'formik';
-
 import Layout from "../layout/layout";
 import Link from "next/link";
 import {
@@ -51,16 +50,8 @@ export default function roadregister() {
     try {
       //Create user
 
-      const res = createUserWithEmailAndPassword(auth, email, password).then(() => {
-        // const auth = getAuth();
-        // console.log(auth)
-        // console.log(auth.currentUser)
-        sendEmailVerification(auth.currentUser)
-          .then(() => {
-            alert("EMail Sent")
-          });
-        })
-      
+      const res = await createUserWithEmailAndPassword(auth, email, password)
+      console.log(res);
     //   res.then((userCredential) => {
     //     // send verification mail.
     //     userCredential.user.sendEmailVerification();
@@ -108,10 +99,10 @@ await uploadBytesResumable(storageRef, file).then(() => {
   setErr(true);
   setLoading(false);
 }
-router.push("./Login");
+//router.push("./Login");
   };
 
-const isPasswordValid = password.length >= 8 || password.length <= 20 && password == cpassword;
+//const isPasswordValid = password.length >= 8 || password.length <= 20 && password == cpassword;
 
 return (
   <>
@@ -167,7 +158,7 @@ return (
                     title="password must not contain special letters"
                     className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
                     required
-                  />
+                  />    
                   <span
                     className="icon flex items-center px-4"
                     onClick={() =>
@@ -223,9 +214,10 @@ return (
                 <div className="flex flex-row border rounded-t-xl">
                   <input
                     required
-                    type="number"
+                    type="tel"
                     name="phone"
                     placeholder="Phone Number"
+                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"  
                     className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
                   />
                   <span className="icon flex items-center px-4">
