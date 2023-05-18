@@ -312,7 +312,7 @@ signInWithPopup(auth, provider)
                       </button>
                     </div>
                     {err && <span className="text-red-500">Something went wrong</span>}
-                    <div className="flex justify-center gap-2 rounded-lg border p-3 bg-indigo-600 text-white hover:scale-110 duration-300 w-60 m-auto">
+                    <div className="flex justify-center gap-2 rounded-lg  border p-3 bg-indigo-600 text-white hover:scale-110 duration-300 w-60 m-auto">
                       <Image
                         src={"/photos/google.svg"}
                         width="20"

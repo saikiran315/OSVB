@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import Image from "next/image";
 // import { doc, onSnapshot } from "firebase/firestore";
-
+import { signOut } from "firebase/auth";
 import h from "../public/photos/Animated_Shape.svg";
 import Nav from "../components/Nav";
 import { useFormik } from "formik";
@@ -133,11 +133,18 @@ export default function search() {
                 <h1 className="text-gray-800 text-4xl font-bold py-4"></h1>
                 <p className="w-3/4 mx-auto text-blue-600 font-bold"> 
                   SEARCH PAGE
+                  <button
+                className="float-right font-bold m-2 bg-red-500 px-4 py-3 rounded-lg text-slate-200 hover:scale-110 duration-300"
+                onClick={() => signOut(auth)}
+              >
+                Sign out
+              </button>
                 </p>
               </div>
 
               <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
                 <div className="flex flex-row border rounded-t-xl">
+                
                   <input
                     type="email"
                     name="email"
@@ -216,7 +223,7 @@ export default function search() {
                   <span className="icon space-x-4 h-18 flex items-center px-4">
                     <MdLocationOn size={25} />
                     <button
-                      onClick={getLocation}
+                      onClick={()=>getLocation()}
                       className="rounded border-2 p-2 bg-indigo-600"
                     >
                       Get Location :{" "}
@@ -230,7 +237,7 @@ export default function search() {
                 <div className="flex flex-row border rounded-t-xl">
                   <MdLocationOn size={25} />
                   <button
-                    onClick={getLoc}
+                    onClick={()=>getLoc()}
                     className="rounded border-2 p-2 bg-indigo-600"
                   >
                     Get Address :{" "}

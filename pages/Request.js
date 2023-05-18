@@ -23,7 +23,8 @@ const Request = (props) => {
   console.log(props);
   const [mech, setMech] = useState([]);
   const [status, setStatus] = useState(true);
-  
+  const [otp,setotp] = useState();
+
   useEffect(
     () =>
       onSnapshot(collection(db, "mechanic"), (snapshot) => {
@@ -95,7 +96,13 @@ const Request = (props) => {
           userAddress: props.address,
           distance: dis,
           msg : props.msg,
+          otp : otp,
+          confirmed : false,
+          mechid : index,
         }),
+        book : arrayUnion({
+          [index] : false
+        })
       })
         .then(() => {
           console.log(
@@ -106,6 +113,7 @@ const Request = (props) => {
           console.log(error);
         });
       console.log("succesfull");
+    
     } catch (err) {
       console.log(err);
       console.log("failed1");
@@ -133,10 +141,25 @@ const Request = (props) => {
     //     console.log('Error sending message:', error);
     //   });
    
-   
+    // genrateotp();
     
   };
-
+  function genrateotp(limit)
+  {
+    var digits ='0123456789';
+    let otp= '';
+    for( let i = 0; i< limit ; i++)
+    {
+      otp+= digits[Math.floor(Math.random()*10)];
+      
+    }
+    setotp(otp)
+  return (<h1 className="text-2xl font-bold py-4">
+  OTP : {otp}
+</h1>)
+  
+  }
+  // console.log(genrateotp(4));
   return (
     <>
       {mech.map((val, i) => (
@@ -176,6 +199,9 @@ const Request = (props) => {
             </h3>
           ) : props.user[`${val["uid"]}`] === "booked" ? (
             <>
+            <h1>OTP :
+              {otp}
+            </h1>
               <h3 className="text-indigo-700 text-center">
                 You have Booked this mechanic
               </h3>
@@ -191,7 +217,11 @@ const Request = (props) => {
             <button
               type="button"
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center w-full text-center"
-              onClick={() => handleButton(val["uid"], val["dis"])}
+              onClick={() =>{
+
+                genrateotp(4),handleButton(val["uid"], val["dis"])}
+              } 
+              
             >
               Book
             </button>
