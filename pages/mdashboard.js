@@ -109,7 +109,7 @@ const Dashboard = () => {
                   className="bg-indigo-600 rounded-lg p-3 text-white "
                   onClick={() => setLoading(true)}
                 >
-                  My books
+                  My bookings
                 </button>
               </div>
             </div>

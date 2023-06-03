@@ -112,7 +112,7 @@ export default function Nav() {
                 <Link href="/">Home</Link>
               </li>
               <li className="text-gray-600 hover:text-blue-600">
-                <a href="./contact">Contact</a>
+                <a href="./contact1">Contact</a>
               </li>
               <li className="text-gray-600 hover:text-blue-600">
                 <a href="./about">About</a>

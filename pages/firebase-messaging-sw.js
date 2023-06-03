@@ -10,22 +10,19 @@ const firebaseConfig = {
   storageBucket: "osvb-1.appspot.com",
   messagingSenderId: "115801201583",
   appId: "1:115801201583:web:87483ef97d8ade89676d5a",
-  measurementId: "G-CJF52B9K88"
+  measurementId: "G-CJF52B9K88",
 };
 
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload
-  );
+messaging.onBackgroundMessage(function (payload) {
+  console.log("Received background message ", payload);
+
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: payload.notification.image,
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
-}); 
+});

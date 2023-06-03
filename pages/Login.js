@@ -321,7 +321,7 @@ signInWithPopup(auth, provider)
                       ></Image>
                       <button type="button" onClick={getPopup}>Sign in with Google </button>
                     </div>
-                    <div className="flex justify-center gap-2 rounded-lg border p-3 bg-violet-600 text-white hover:scale-110 duration-300 w-60 mx-auto">
+                    {/* <div className="flex justify-center gap-2 rounded-lg border p-3 bg-violet-600 text-white hover:scale-110 duration-300 w-60 mx-auto">
                       <Image
                         src={"/photos/facebook"}
                         width="20"
@@ -335,7 +335,7 @@ signInWithPopup(auth, provider)
                       >
                         Sign-in with Facebook
                       </button>
-                    </div>
+                    </div> */}
                   </form>
                   <p className="text-center text-red-400 mt-[-33px] hover:scale-110 duration-300 w-60 mx-auto ">
                     Forgot your Password <a className="text-blue-700" href="/forgetpass">Reset</a>

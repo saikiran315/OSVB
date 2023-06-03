@@ -154,7 +154,7 @@ return (
                     type={`${show.password ? "text" : "password"}`}
                     name="password"
                     placeholder="Password"
-                    pattern="[a-z0-9]{1,10}"
+                   // pattern="[a-z0-9]{1,10}"
                     title="password must not contain special letters"
                     className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
                     required

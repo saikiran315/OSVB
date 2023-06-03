@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState,useRef } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import h from "../public/photos/Animated_Shape.svg";
@@ -7,6 +7,7 @@ import {
   HiFingerPrint,
   HiOutlineUser,
   HiPhone,
+
 } from "react-icons/hi";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db, storage } from "../firebase/firebase";
@@ -14,49 +15,34 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import Nav from "../components/Nav";
 import Image from "next/image";
-import { GiHomeGarage } from "react-icons/gi";
-import emailjs from "@emailjs/browser";
+import { GiHomeGarage } from "react-icons/gi"
+import emailjs from '@emailjs/browser';
 
 const ContactPage = () => {
-  const form = useRef();
 
-  const templateParams = {
-    from_name: "praneeth",
-    to_name: "kiran",
-    from_email: "praneethsai800@gmail.com",
-    to_email: "sai.dharmapu@gmail.com",
-    message: "hello world, this is a test message",
-  };
+  const form = useRef();
 
   const [submitterName, setSubmitterName] = useState("");
   const router = useRouter();
+
 
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit =  (e) => {
     e.preventDefault();
     console.log(form.current);
-    emailjs
-      .send(
-        "service_nd1r2a8",
-        "template_lf2h10u",
-        templateParams,
-        "a7Q45_gXvq8wekhqM"
-      )
-      .then(
-        (result) => {
+    emailjs.sendForm('service_nd1r2a8', 'template_69y5x9g', form.current, 'a7Q45_gXvq8wekhqM')
+      .then((result) => {
           console.log(result.text);
           console.log(result);
-        },
-        (error) => {
+      }, (error) => {
           console.log(error.text);
-        }
-      );
-    setLoading(true);
-    form.current.reset();
+      });
+      setLoading(true); 
+      form.current.reset(); 
   };
 
   return (
@@ -75,18 +61,16 @@ const ContactPage = () => {
                   </p>
                 </div>
 
-                <form
-                  ref={form}
-                  className="flex flex-col gap-5"
-                  onSubmit={handleSubmit}
-                >
+                <form ref={form} className="flex flex-col gap-5" onSubmit={handleSubmit} >
                   <div className="flex flex-row border rounded-t-xl">
                     <input
                       required
                       type="text"
                       name="from_name"
-                      placeholder="From Name"
+                      placeholder="Username"
+
                       className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
+
                     />
                     <span className="icon flex items-center px-4">
                       <HiOutlineUser size={25} />
@@ -96,29 +80,7 @@ const ContactPage = () => {
                     <input
                       type="email"
                       name="from_email"
-                      placeholder="From Email"
-                      className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
-                    />
-                    <span className="icon flex items-center px-4">
-                      <HiAtSymbol size={25} />
-                    </span>
-                  </div>
-                  <div className="flex flex-row border rounded-t-xl">
-                    <input
-                      type="text"
-                      name="to_name"
-                      placeholder="To Name"
-                      className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
-                    />
-                    <span className="icon flex items-center px-4">
-                      <HiAtSymbol size={25} />
-                    </span>
-                  </div>
-                  <div className="flex flex-row border rounded-t-xl">
-                    <input
-                      type="email"
-                      name="to_email"
-                      placeholder="To Email"
+                      placeholder="Email"
                       className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
                     />
                     <span className="icon flex items-center px-4">
@@ -126,9 +88,11 @@ const ContactPage = () => {
                     </span>
                   </div>
 
+
+
                   <div className="flex flex-row border rounded-t-xl">
                     <textarea
-                      rows={4}
+                    rows={4}
                       name="message"
                       placeholder="message"
                       className=" w-full py-4 px-6 border rounded-xl bg-slate-50 focus:outline-1"
@@ -139,17 +103,17 @@ const ContactPage = () => {
                   </div>
 
                   <div className="input-button">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="bg-indigo-600 rounded-lg p-3 text-white"
+                    >
+                      SEND
+                    </button>
                     {loading && "sent Successfully"}
                   </div>
                 </form>
-                <button
-                  type="submit"
-                  // disabled={loading}
-                  onClick={handleSubmit}
-                  className="bg-indigo-600 rounded-lg p-3 text-white"
-                >
-                  SEND
-                </button>
+
               </div>
             </div>
           </div>
@@ -157,5 +121,6 @@ const ContactPage = () => {
       </div>
     </>
   );
-};
+
+}
 export default ContactPage;

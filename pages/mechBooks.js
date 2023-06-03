@@ -1,12 +1,23 @@
 import { React, useState, useEffect } from "react";
-import { doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  deleteField,
+} from "firebase/firestore";
 import { auth, db, storage, collection } from "../firebase/firebase";
 import { getMessaging, getToken } from "firebase/messaging";
-import OtpInput from 'react-otp-input';
+import emailjs from "@emailjs/browser";
+
+import OtpInput from "react-otp-input";
 const mechBooks = (props) => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState([]);
   const [status, setStatus] = useState(false);
-  const [checkotp, setcheckotp] = useState()
+  const [checkotp, setcheckotp] = useState();
   const check = async () => {
     const docRef = doc(db, "mechbooks", props.uid);
     const docSnap = await getDoc(docRef);
@@ -30,16 +41,16 @@ const mechBooks = (props) => {
     });
 
     updateDoc(doc(db, "mechbooks", mechid), {
-      book: arrayRemove(mechid),
-      book: arrayUnion({
-        [mechid]: true
-      }
-      )
+      [mechid]: true,
+
+      // book: arrayUnion({
+      //   [mechid]: true,
+      // }),
     }).then(() => {
-      console.log("field added");
-    })
+      console.log("field deleted");
+    });
     // user["book"].map((val, i) => (
-    //   val['mechid']==mechid && 
+    //   val['mechid']==mechid &&
     // )
     // )
 
@@ -75,7 +86,6 @@ const mechBooks = (props) => {
       // setStatus(false);
     });
   };
-  console.log(user["book"]);
   // user["book"].map((e) => {
   //   console.log(e);
   // });
@@ -84,31 +94,30 @@ const mechBooks = (props) => {
   return (
     <>
       {Object.keys(user).length != 0 &&
-        user["book"].map((val, i) => (
-          val['username'] &&
+        [user].map((val, i) => (
           <div key={i} className="item-center flex-wrap mt-20">
             <div className="lg:w-3/5 w-5/6 shadow-2xl m-auto text-center bg-slate-200 text-black rounded-2xl">
               <div className="p-4 md:p-12 text-center">
                 <h1 className="text-2xl font-bold ">
-                  Client Name : {val["username"]}
+                  Client Name : {val["book"][0]["username"]}
                 </h1>
                 <h1 className="text-2xl font-bold pt-4">
-                  Address : {val["userAddress"]}
+                  Address : {val["book"][0]["userAddress"]}
                 </h1>
                 <h1 className="text-2xl font-bold py-4">
-                  Phone No : {val["phone"]}
+                  Phone No : {val["book"][0]["phone"]}
                 </h1>
                 <h1 className="text-2xl font-bold py-4">
-                  Vehicle Model : {val["vModel"]}
+                  Vehicle Model : {val["book"][0]["vModel"]}
                 </h1>
                 <h1 className="text-2xl font-bold py-4">
-                  Vehicle No : {val["vNo"]}
+                  Vehicle No : {val["book"][0]["vNo"]}
                 </h1>
                 <h1 className="text-2xl font-bold py-4">
-                  Vehicle No : {val["vNo"]}
+                  Vehicle No : {val["book"][0]["vNo"]}
                 </h1>
                 <h1 className="text-2xl font-bold py-4">
-                  Message : {val["msg"]}
+                  Message : {val["book"][0]["msg"]}
                 </h1>
                 <hr />
 
@@ -134,41 +143,57 @@ const mechBooks = (props) => {
                     Confirm
                   </button>
                 )} */}
-                {
-                  props.uid == false ? (
-
-                    <button
-                      type="button"
-                      className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center  text-center"
-                      onClick={() => {
-
-                        handleConfirm(val["useruid"], val['mechid'], i)
-                      }
-                      }
-                    >
-                      Confirm
-                    </button>
-                  ) :
-                    checkotp != val['otp'] ? (
-                      <div className="">
-                        <OtpInput
+                {val[props.uid] == false ? (
+                  <button
+                    type="button"
+                    className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center  text-center"
+                    onClick={() => {
+                      handleConfirm(
+                        val["book"][0]["useruid"],
+                        val["book"][0]["mechid"],
+                        i
+                      ),
+                        setcheckotp(Number(prompt("Enter Otp")));
+                    }}
+                  >
+                    Confirm
+                  </button>
+                ) : checkotp == val["book"][0]["otp"] ? (
+                  <>
+                    <h1 className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center  text-center">
+                      Accepted
+                    </h1>
+                  </>
+                ) : null}
+                {/* {val[props.uid] == false ? (
+                  <button
+                    type="button"
+                    className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center  text-center"
+                    onClick={() => {
+                      handleConfirm(val["useruid"], val["mechid"], i);
+                    }}
+                  >
+                    Confirm
+                  </button>
+                ) : checkotp != val["otp"]  ? (
+                  <>
+                    <h1 className="text-blue-700 text-xl">Enter OTP</h1>
+                    <OtpInput
+                      shouldAutoFocus
+                      className="otpcontainer block "
                       value={checkotp}
                       onChange={setcheckotp}
                       numInputs={4}
                       renderSeparator={<span>-</span>}
                       renderInput={(props) => <input {...props} />}
-                      />
-                     
-                      </div>
-                      // <input type="number" name="otp" id="otp" onChange={(e)=>setcheckotp(e.target.value)} />
-                    ) :
-                      (
-                        <h1
-                          className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center  text-center">
-                          Accepted
-                        </h1>
-                      )
-                }
+                    />
+                    {/* // <input type="number" name="otp" id="otp" onChange={(e) => setcheckotp(e.target.value)} /> }
+                  </>
+                ) : (
+                  <h1 className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center  text-center">
+                    Accepted
+                  </h1>
+                )} */}
               </div>
             </div>
           </div>

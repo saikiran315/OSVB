@@ -7,6 +7,7 @@ import {
   doc,
   onSnapshot,
   setDoc,
+  getDoc,
   updateDoc,
   deleteField,
   query,
@@ -16,6 +17,7 @@ import {
 import { db } from "../firebase/firebase";
 import { getMessaging, getToken } from "firebase/messaging";
 import { messaging } from "../firebase/firebase";
+import emailjs from "@emailjs/browser";
 
 // import { doc, setDoc, getDoc } from "firebase/firestore";
 const Request = (props) => {
@@ -23,7 +25,7 @@ const Request = (props) => {
   console.log(props);
   const [mech, setMech] = useState([]);
   const [status, setStatus] = useState(true);
-  const [otp,setotp] = useState();
+  const [otp, setotp] = useState();
 
   useEffect(
     () =>
@@ -69,11 +71,36 @@ const Request = (props) => {
     //   console.log("deleted");
     // });
   };
-  const handleButton = async (index, dis) => {
+  const handleButton = async (index, dis, email, mechname) => {
     // onSnapshot(doc(db, "mechbooks", index), (doc) => {
     //   console.log(doc.data()["book"][0]["useruid"]);
     // });
     // console.log(props.user[`${index}`]);
+
+    const templateParams = {
+      from_name: props.user.username,
+      to_name: mechname,
+      from_email: props.user.email,
+      to_email: email,
+      message: "Message :  " + props.msg,
+    };
+    emailjs
+      .send(
+        "service_nd1r2a8",
+        "template_lf2h10u",
+        templateParams,
+        "a7Q45_gXvq8wekhqM"
+      )
+      .then(
+        (result) => {
+          console.log(result.text);
+          console.log(result);
+        },
+        (error) => {
+          console.log(error.text);
+        }
+      );
+
     updateDoc(doc(db, "clients", props.user.uid), {
       [index]: "booked",
     }).then(() => {
@@ -83,37 +110,69 @@ const Request = (props) => {
     console.log(props.user);
 
     try {
-      updateDoc(doc(db, "mechbooks", index), {
-        book: arrayUnion({
-          useruid: props.user.uid,
-          email: props.user.email,
-          phone: props.user.phone,
-          username: props.user.username,
-          vModel: props.user.vModel,
-          vNo: props.user.vNo,
-          userLat: props.lat,
-          userLng: props.lng,
-          userAddress: props.address,
-          distance: dis,
-          msg : props.msg,
-          otp : otp,
-          confirmed : false,
-          mechid : index,
-        }),
-        book : arrayUnion({
-          [index] : false
+      const docRef = doc(db, "mechbooks", index);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        updateDoc(docRef, {
+          book: arrayUnion({
+            useruid: props.user.uid,
+            email: props.user.email,
+            phone: props.user.phone,
+            username: props.user.username,
+            vModel: props.user.vModel,
+            vNo: props.user.vNo,
+            userLat: props.lat,
+            userLng: props.lng,
+            userAddress: props.address,
+            distance: dis,
+            msg: props.msg,
+            otp: otp,
+            confirmed: false,
+            mechid: index,
+            [index]: false,
+          }),
+          [index]: false,
         })
-      })
-        .then(() => {
-          console.log(
-            "A New mechbook Document Field has been added to an existing document"
-          );
+          .then(() => {
+            console.log(
+              "A New mechbook Document Field has been added to an existing document"
+            );
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        console.log("succesfull");
+      } else {
+        setDoc(doc(db, "mechbooks", index), {
+          book: arrayUnion({
+            useruid: props.user.uid,
+            email: props.user.email,
+            phone: props.user.phone,
+            username: props.user.username,
+            vModel: props.user.vModel,
+            vNo: props.user.vNo,
+            userLat: props.lat,
+            userLng: props.lng,
+            userAddress: props.address,
+            distance: dis,
+            msg: props.msg,
+            otp: otp,
+            confirmed: false,
+            mechid: index,
+            [index]: false,
+          }),
+          [index]: false,
         })
-        .catch((error) => {
-          console.log(error);
-        });
-      console.log("succesfull");
-    
+          .then(() => {
+            console.log(
+              "A New mechbook Document Field has been added to an existing document"
+            );
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        console.log("succesfull");
+      }
     } catch (err) {
       console.log(err);
       console.log("failed1");
@@ -140,24 +199,17 @@ const Request = (props) => {
     //   .catch((error) => {
     //     console.log('Error sending message:', error);
     //   });
-   
+
     // genrateotp();
-    
   };
-  function genrateotp(limit)
-  {
-    var digits ='0123456789';
-    let otp= '';
-    for( let i = 0; i< limit ; i++)
-    {
-      otp+= digits[Math.floor(Math.random()*10)];
-      
+  function genrateotp(limit) {
+    var digits = "0123456789";
+    let otp = "";
+    for (let i = 0; i < limit; i++) {
+      otp += digits[Math.floor(Math.random() * 10)];
     }
-    setotp(otp)
-  return (<h1 className="text-2xl font-bold py-4">
-  OTP : {otp}
-</h1>)
-  
+    setotp(otp);
+    return <h1 className="text-2xl font-bold py-4">OTP : {otp}</h1>;
   }
   // console.log(genrateotp(4));
   return (
@@ -199,9 +251,7 @@ const Request = (props) => {
             </h3>
           ) : props.user[`${val["uid"]}`] === "booked" ? (
             <>
-            <h1>OTP :
-              {otp}
-            </h1>
+              <h1>OTP :{otp}</h1>
               <h3 className="text-indigo-700 text-center">
                 You have Booked this mechanic
               </h3>
@@ -217,11 +267,15 @@ const Request = (props) => {
             <button
               type="button"
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center w-full text-center"
-              onClick={() =>{
-
-                genrateotp(4),handleButton(val["uid"], val["dis"])}
-              } 
-              
+              onClick={() => {
+                genrateotp(4),
+                  handleButton(
+                    val["uid"],
+                    val["dis"],
+                    val["email"],
+                    val["username"]
+                  );
+              }}
             >
               Book
             </button>
